@@ -80,7 +80,7 @@
     "testEnvironment": "node"
   },
   "lint-staged": {
-    "*.ts": "npm run lint"
+    "src/*.ts": "npm run lint"
   },
   "config": {
     "commitizen": {

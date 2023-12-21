@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "streetsidesoftware.code-spell-checker-portuguese-brazilian",
+    "streetsidesoftware.code-spell-checker",
+    "editorconfig.editorconfig",
+    "dbaeumer.vscode-eslint",
+    "irongeek.vscode-env",
+    "orta.vscode-jest",
+    "mongodb.mongodb-vscode",
+    "esbenp.prettier-vscode",
+    "redhat.vscode-yaml",
+    "aaron-bond.better-comments",
+    "mikestead.dotenv",
+    "usernamehw.errorlens"
+  ]
+}
