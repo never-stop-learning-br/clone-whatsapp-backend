@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { GatewayModule } from './gateway/gateway.module';
+import { GatewayModule } from '@/gateway';
+import { ModulesModule } from '@/modules';
 
 @Module({
   imports: [
@@ -26,8 +25,9 @@ import { GatewayModule } from './gateway/gateway.module';
       },
     }),
     GatewayModule,
+    ModulesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
