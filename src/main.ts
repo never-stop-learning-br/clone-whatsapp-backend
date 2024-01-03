@@ -1,9 +1,13 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { AppModule } from './app.module';
+
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+
   const app = await NestFactory.create(AppModule);
   const configServer = app.get<ConfigService>(ConfigService);
   const serverPort = configServer.getOrThrow('SERVER_PORT');
@@ -26,7 +30,11 @@ async function bootstrap() {
 
   app.enableCors();
   app.setGlobalPrefix('api');
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(serverPort);
+
+  const url = await app.getUrl();
+  logger.log(`listening app at ${url}`);
 }
 bootstrap();
