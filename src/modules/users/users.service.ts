@@ -24,7 +24,7 @@ export class UsersService {
     return hash;
   }
 
-  public async create(createUserDto: CreateUserDTO): Promise<User> {
+  public async createOne(createUserDto: CreateUserDTO): Promise<User> {
     const { password, ...dto } = createUserDto;
 
     const hashedPassword = await this.hashPassword(password);
@@ -33,8 +33,6 @@ export class UsersService {
       password: hashedPassword,
       ...dto,
     });
-
-    delete user.password;
 
     return user;
   }
@@ -47,10 +45,23 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  public update(id: string, updateUserDto: UpdateUserDTO) {
-    console.log({ updateUserDto });
+  public async updateOneById(id: string, updateUserDto: UpdateUserDTO) {
+    const { password, ...dto } = updateUserDto;
 
-    return `This action updates a #${id} user`;
+    const updateFields: Partial<
+      Record<keyof UpdateUserDTO, UpdateUserDTO[keyof UpdateUserDTO]>
+    > = dto;
+    if (password) {
+      const hashedPassword = await this.hashPassword(password);
+      updateFields.password = hashedPassword;
+    }
+
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      updateFields,
+      { new: true },
+    );
+    return updatedUser;
   }
 
   public softDelete(id: string) {

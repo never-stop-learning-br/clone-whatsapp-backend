@@ -8,6 +8,7 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 
 import { RemoveFieldsInterceptor } from '@/interceptors';
 
@@ -21,8 +22,8 @@ export class UsersController {
 
   @Post()
   @UseInterceptors(new RemoveFieldsInterceptor<User>(['password']))
-  public create(@Body() createUserDto: CreateUserDTO) {
-    return this.usersService.create(createUserDto);
+  public createOne(@Body() createUserDto: CreateUserDTO) {
+    return this.usersService.createOne(createUserDto);
   }
 
   @Get()
@@ -35,9 +36,18 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  @ApiOperation({
+    summary: 'Update One user by id',
+    description:
+      'This request update only "username" or "password" from user entity with given id',
+  })
   @Patch(':id')
-  public update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDTO) {
-    return this.usersService.update(id, updateUserDto);
+  @UseInterceptors(new RemoveFieldsInterceptor<User>(['password']))
+  public updateOneById(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDTO,
+  ) {
+    return this.usersService.updateOneById(id, updateUserDto);
   }
 
   @Delete(':id')
