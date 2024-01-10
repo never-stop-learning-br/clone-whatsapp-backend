@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 
 import { CONNECTION_NAME_MAIN } from '@/shared/constants/database';
 
+import { CreateUserDTO } from './dto';
 import { User } from './entities';
 import { UsersService } from './users.service';
 
@@ -43,7 +44,7 @@ describe(UsersService.name, () => {
         username: faker.person.firstName(),
         email: faker.internet.email(),
         password: faker.internet.password(),
-      };
+      } as CreateUserDTO;
 
       const spiedBcryptGenSalt = jest.spyOn(bcrypt, 'genSalt');
       const spiedBcryptHash = jest.spyOn(bcrypt, 'hash');
@@ -134,6 +135,39 @@ describe(UsersService.name, () => {
       expect(userModelMock.findByIdAndUpdate).toHaveBeenCalledWith(
         id,
         updatedUser,
+        { new: true },
+      );
+
+      expect(returnedValue).toEqual(expectedValue);
+    });
+  });
+
+  describe('softDeleteByid', () => {
+    it('should make softDelete one user by id', async () => {
+      // ? ARRANGE
+      const id = faker.database.mongodbObjectId();
+      const dto = {
+        username: faker.person.firstName(),
+        email: faker.internet.email(),
+        deletedAt: null,
+      };
+      const updatedUser = {
+        ...dto,
+        deletedAt: new Date(),
+      };
+
+      userModelMock.findByIdAndUpdate.mockImplementationOnce(() => updatedUser);
+      const expectedValue = updatedUser;
+      // ? ACT
+      const returnedValue = await service.softDeleteById(id);
+
+      // ? ASSERT
+      expect(userModelMock.findByIdAndUpdate).toHaveBeenCalledTimes(1);
+      expect(userModelMock.findByIdAndUpdate).toHaveBeenCalledWith(
+        id,
+        {
+          deletedAt: new Date(),
+        },
         { new: true },
       );
 

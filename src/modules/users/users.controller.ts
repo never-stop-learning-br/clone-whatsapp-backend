@@ -51,7 +51,8 @@ export class UsersController {
   }
 
   @Delete(':id')
-  public softDelete(@Param('id') id: string) {
-    return this.usersService.softDelete(id);
+  @UseInterceptors(new RemoveFieldsInterceptor<User>(['password']))
+  public softDeleteById(@Param('id') id: string) {
+    return this.usersService.softDeleteById(id);
   }
 }

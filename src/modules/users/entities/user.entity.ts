@@ -2,6 +2,7 @@ import { ModelDefinition, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import type { HydratedDocument } from 'mongoose';
 
+import { CommonFields } from '@/shared/entities/common-fields';
 import {
   ERR_DB_FIRST_CHAR_LETTER,
   ERR_DB_MAX_256_CHARACTERS,
@@ -23,7 +24,7 @@ import {
 @Schema({
   timestamps: true,
 })
-export class User {
+export class User extends CommonFields {
   @Prop({
     type: String,
     lowercase: [true],

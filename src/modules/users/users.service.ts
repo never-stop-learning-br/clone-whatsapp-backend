@@ -38,7 +38,8 @@ export class UsersService {
   }
 
   public findAll() {
-    return `This action returns all users`;
+    // return `This action returns all users`;
+    return this.userModel.find();
   }
 
   public findOne(id: string) {
@@ -64,7 +65,14 @@ export class UsersService {
     return updatedUser;
   }
 
-  public softDelete(id: string) {
-    return `This action removes a #${id} user`;
+  public async softDeleteById(id: string) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      {
+        deletedAt: new Date(),
+      },
+      { new: true },
+    );
+    return updatedUser;
   }
 }

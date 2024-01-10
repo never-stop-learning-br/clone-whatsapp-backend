@@ -2,7 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import {
   IsAlphanumeric,
+  IsDate,
   IsEmail,
+  IsOptional,
   IsString,
   IsStrongPassword,
   MaxLength,
@@ -50,4 +52,8 @@ export class CreateUserDTO implements UserDTO {
   @MaxLength(256)
   @IsStrongPassword()
   public password: string;
+
+  @IsOptional()
+  @IsDate()
+  public deletedAt: Date;
 }
