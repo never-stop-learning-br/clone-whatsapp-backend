@@ -2,9 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import {
   IsAlphanumeric,
-  IsDate,
   IsEmail,
-  IsOptional,
   IsString,
   IsStrongPassword,
   MaxLength,
@@ -18,6 +16,7 @@ type UserDTO = {
 };
 
 export class CreateUserDTO implements UserDTO {
+  public deletedAt: Date;
   @ApiProperty({
     type: String,
     description: 'Unique "username" in the application',
@@ -52,8 +51,4 @@ export class CreateUserDTO implements UserDTO {
   @MaxLength(256)
   @IsStrongPassword()
   public password: string;
-
-  @IsOptional()
-  @IsDate()
-  public deletedAt: Date;
 }

@@ -37,7 +37,7 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Update One user by id',
+    summary: 'Update one user by id',
     description:
       'This request update only "username" or "password" from user entity with given id',
   })
@@ -50,6 +50,11 @@ export class UsersController {
     return this.usersService.updateOneById(id, updateUserDto);
   }
 
+  @ApiOperation({
+    summary: 'SoftDelete one user by id',
+    description:
+      'This request update the field "deletedAt" with the current date making the user deleted',
+  })
   @Delete(':id')
   @UseInterceptors(new RemoveFieldsInterceptor<User>(['password']))
   public softDeleteById(@Param('id') id: string) {

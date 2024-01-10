@@ -6,6 +6,7 @@ import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 
 import { CONNECTION_NAME_MAIN } from '@/shared/constants/database';
+import { createToday } from '@/shared/tests/utils';
 
 import { CreateUserDTO } from './dto';
 import { User } from './entities';
@@ -32,14 +33,18 @@ describe(UsersService.name, () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
+    jest.useFakeTimers().setSystemTime(createToday(new Date()));
     jest.resetAllMocks();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe('createOne', () => {
     it('should create one user', async () => {
       // ? ARRANGE
       const rounds = 10;
-
       const dto = {
         username: faker.person.firstName(),
         email: faker.internet.email(),
@@ -93,7 +98,6 @@ describe(UsersService.name, () => {
     it('should update one user by id passing password field', async () => {
       // ? ARRANGE
       const rounds = 10;
-
       const id = faker.database.mongodbObjectId();
       const dto = {
         username: faker.person.firstName(),
@@ -149,15 +153,14 @@ describe(UsersService.name, () => {
       const dto = {
         username: faker.person.firstName(),
         email: faker.internet.email(),
-        deletedAt: null,
       };
       const updatedUser = {
         ...dto,
         deletedAt: new Date(),
       };
-
       userModelMock.findByIdAndUpdate.mockImplementationOnce(() => updatedUser);
       const expectedValue = updatedUser;
+
       // ? ACT
       const returnedValue = await service.softDeleteById(id);
 

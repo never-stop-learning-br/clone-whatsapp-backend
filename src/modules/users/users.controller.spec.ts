@@ -34,7 +34,6 @@ describe(UsersController.name, () => {
   describe('createOne', () => {
     it('should create one user', async () => {
       // ? ARRANGE
-
       const dto = {
         username: faker.person.firstName(),
         email: faker.internet.email(),
@@ -73,8 +72,10 @@ describe(UsersController.name, () => {
     it('should make softDelete one user by id', async () => {
       // ? ARRANGE
       const id = faker.database.mongodbObjectId();
+
       // ? ACT
       await controller.softDeleteById(id);
+
       // ? ASSERT
       expect(usersServiceMock.softDeleteById).toHaveBeenCalledTimes(1);
       expect(usersServiceMock.softDeleteById).toHaveBeenCalledWith(id);
