@@ -37,10 +37,6 @@ describe(UsersService.name, () => {
     jest.resetAllMocks();
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
   describe('createOne', () => {
     it('should create one user', async () => {
       // ? ARRANGE
@@ -146,8 +142,8 @@ describe(UsersService.name, () => {
     });
   });
 
-  describe('softDeleteByid', () => {
-    it('should make softDelete one user by id', async () => {
+  describe('softDeleteById', () => {
+    it('should soft delete one user by id', async () => {
       // ? ARRANGE
       const id = faker.database.mongodbObjectId();
       const dto = {
@@ -168,13 +164,15 @@ describe(UsersService.name, () => {
       expect(userModelMock.findByIdAndUpdate).toHaveBeenCalledTimes(1);
       expect(userModelMock.findByIdAndUpdate).toHaveBeenCalledWith(
         id,
-        {
-          deletedAt: new Date(),
-        },
+        { deletedAt: new Date() },
         { new: true },
       );
 
       expect(returnedValue).toEqual(expectedValue);
     });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 });
