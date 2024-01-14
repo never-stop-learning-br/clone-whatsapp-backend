@@ -68,9 +68,7 @@ export class UsersService {
   public async softDeleteById(id: string) {
     const updatedUser = await this.userModel.findByIdAndUpdate(
       id,
-      {
-        deletedAt: new Date(),
-      },
+      { deletedAt: new Date() },
       { new: true },
     );
     return updatedUser;
