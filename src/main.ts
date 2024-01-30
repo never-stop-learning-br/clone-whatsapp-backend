@@ -16,6 +16,10 @@ async function bootstrap() {
   const DESCRIPTION = 'The main API of "WhatsApp Clone Backend"';
   const API_VERSION = '1.0';
 
+  app.enableCors();
+  app.setGlobalPrefix('api');
+  app.useGlobalPipes(new ValidationPipe());
+
   const config = new DocumentBuilder()
     .setTitle(TITLE)
     .setDescription(DESCRIPTION)
@@ -26,11 +30,10 @@ async function bootstrap() {
     ignoreGlobalPrefix: false,
   });
 
-  SwaggerModule.setup('api', app, document, { customSiteTitle: TITLE });
-
-  app.enableCors();
-  app.setGlobalPrefix('api');
-  app.useGlobalPipes(new ValidationPipe());
+  SwaggerModule.setup('docs', app, document, {
+    customSiteTitle: TITLE,
+    useGlobalPrefix: false,
+  });
 
   await app.listen(serverPort);
 
