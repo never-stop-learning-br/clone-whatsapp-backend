@@ -6,13 +6,15 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 
 import { RemoveFieldsInterceptor } from '@/interceptors';
+import { PaginationOptionsDTO } from '@/shared/dtos';
 
-import { CreateUserDTO, UpdateUserDTO } from './dto';
+import { CreateUserDTO, FindUserDTO, UpdateUserDTO } from './dto';
 import { User } from './entities';
 import { UsersService } from './users.service';
 
@@ -27,8 +29,11 @@ export class UsersController {
   }
 
   @Get()
-  public findAll() {
-    return this.usersService.findAll();
+  public findAll(
+    @Query() pagination: PaginationOptionsDTO,
+    @Query() filter: FindUserDTO,
+  ) {
+    return this.usersService.findAll({ filter, pagination });
   }
 
   @Get(':id')

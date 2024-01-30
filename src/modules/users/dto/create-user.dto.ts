@@ -16,7 +16,6 @@ type UserDTO = {
 };
 
 export class CreateUserDTO implements UserDTO {
-  public deletedAt: Date;
   @ApiProperty({
     type: String,
     description: 'Unique "username" in the application',

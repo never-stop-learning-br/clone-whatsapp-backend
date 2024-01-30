@@ -2,11 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import * as bcrypt from 'bcrypt';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, QueryOptions } from 'mongoose';
 
 import { CONNECTION_NAME_MAIN } from '@/shared/constants/database';
+import {
+  PaginationDTO,
+  PaginationMetaDTO,
+  PaginationOptionsDTO,
+} from '@/shared/dtos';
 
-import { CreateUserDTO, UpdateUserDTO } from './dto';
+import { CreateUserDTO, FindUserDTO, UpdateUserDTO } from './dto';
 import { User } from './entities';
 
 @Injectable()
@@ -37,9 +42,29 @@ export class UsersService {
     return user;
   }
 
-  public findAll() {
-    // return `This action returns all users`;
-    return this.userModel.find();
+  public async findAll({
+    filter: { email, username } = {},
+    pagination: { page, size },
+  }: {
+    filter: FindUserDTO;
+    pagination: PaginationOptionsDTO;
+  }) {
+    const query: FilterQuery<User> = {};
+    const options: QueryOptions<User> = {
+      limit: size,
+      skip: (page - 1) * size,
+    };
+
+    if (username) query.username = new RegExp(`${username}`, 'gi');
+    if (email) query.email = new RegExp(`${email}`, 'gi');
+
+    const total = await this.userModel.countDocuments(query);
+
+    const data = await this.userModel.find(query, {}, options);
+    const meta = new PaginationMetaDTO({ page, size, total });
+
+    const pagination = new PaginationDTO(data, meta);
+    return pagination;
   }
 
   public async findOneById(id: string) {
