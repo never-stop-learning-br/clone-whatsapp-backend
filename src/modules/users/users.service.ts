@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 
 import { CONNECTION_NAME_MAIN } from '@/shared/constants/database';
 
@@ -42,8 +42,12 @@ export class UsersService {
     return this.userModel.find();
   }
 
-  public findOne(id: string) {
-    return `This action returns a #${id} user`;
+  public async findOneById(id: string) {
+    const user = await this.userModel.findById(id);
+
+    if (!user) throw new NotFoundException();
+
+    return user;
   }
 
   public async updateOneById(id: string, updateUserDto: UpdateUserDTO) {

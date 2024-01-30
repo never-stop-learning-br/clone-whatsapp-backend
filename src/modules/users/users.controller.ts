@@ -32,8 +32,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  public findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  public findOneById(@Param('id') id: string) {
+    return this.usersService.findOneById(id);
   }
 
   @ApiOperation({

@@ -18,6 +18,7 @@ describe(UsersService.name, () => {
   const userModelMock = {
     create: jest.fn(),
     findByIdAndUpdate: jest.fn(),
+    findById: jest.fn(),
   };
 
   const mockedProviders: Provider[] = [
@@ -33,7 +34,7 @@ describe(UsersService.name, () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    jest.useFakeTimers().setSystemTime(createToday(new Date()));
+
     jest.resetAllMocks();
   });
 
@@ -90,6 +91,34 @@ describe(UsersService.name, () => {
     });
   });
 
+  describe('findOneById', () => {
+    it('should find one user by id', async () => {
+      // ? ARRANGE
+      const id = faker.database.mongodbObjectId();
+
+      const user = {
+        username: faker.person.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+      };
+
+      userModelMock.findById.mockImplementationOnce(() => user);
+
+      const expectedValue = user;
+
+      // ? ACT
+      const returnedValue = await service.findOneById(id);
+
+      // ? ASSERT
+      expect(userModelMock.findById).toHaveBeenCalledTimes(1);
+      expect(userModelMock.findById).toHaveBeenCalledWith(id);
+
+      expect(returnedValue).toEqual(expectedValue);
+    });
+
+    it.todo('should throw an error if not find one user with given id');
+  });
+
   describe('updateOneById', () => {
     it('should update one user by id passing password field', async () => {
       // ? ARRANGE
@@ -140,9 +169,49 @@ describe(UsersService.name, () => {
 
       expect(returnedValue).toEqual(expectedValue);
     });
+
+    it('should update one user by id without passing password field', async () => {
+      // ? ARRANGE
+      const id = faker.database.mongodbObjectId();
+      const dto = {
+        username: faker.person.firstName(),
+      };
+
+      const spiedBcryptGenSalt = jest.spyOn(bcrypt, 'genSalt');
+      const spiedBcryptHash = jest.spyOn(bcrypt, 'hash');
+
+      const updatedUser = {
+        ...dto,
+      };
+
+      userModelMock.findByIdAndUpdate.mockImplementationOnce(() => updatedUser);
+
+      const expectedValue = updatedUser;
+
+      // ? ACT
+      const returnedValue = await service.updateOneById(id, dto);
+
+      // ? ASSERT
+      expect(spiedBcryptGenSalt).toHaveBeenCalledTimes(0);
+
+      expect(spiedBcryptHash).toHaveBeenCalledTimes(0);
+
+      expect(userModelMock.findByIdAndUpdate).toHaveBeenCalledTimes(1);
+      expect(userModelMock.findByIdAndUpdate).toHaveBeenCalledWith(
+        id,
+        updatedUser,
+        { new: true },
+      );
+
+      expect(returnedValue).toEqual(expectedValue);
+    });
   });
 
   describe('softDeleteById', () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(createToday(new Date()));
+    });
+
     it('should soft delete one user by id', async () => {
       // ? ARRANGE
       const id = faker.database.mongodbObjectId();
@@ -170,9 +239,9 @@ describe(UsersService.name, () => {
 
       expect(returnedValue).toEqual(expectedValue);
     });
-  });
 
-  afterEach(() => {
-    jest.useRealTimers();
+    afterEach(() => {
+      jest.useRealTimers();
+    });
   });
 });
