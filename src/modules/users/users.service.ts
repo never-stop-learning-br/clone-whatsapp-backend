@@ -12,6 +12,7 @@ import {
 } from '@/shared/dtos';
 
 import { CreateUserDTO, FindUserDTO, UpdateUserDTO } from './dto';
+import { SortUserDTO } from './dto/sort-user.dto';
 import { User } from './entities';
 
 @Injectable()
@@ -45,14 +46,17 @@ export class UsersService {
   public async findAll({
     filter: { email, username } = {},
     pagination: { page, size },
+    sort = {},
   }: {
     filter: FindUserDTO;
     pagination: PaginationOptionsDTO;
+    sort: SortUserDTO;
   }) {
     const query: FilterQuery<User> = {};
     const options: QueryOptions<User> = {
       limit: size,
       skip: (page - 1) * size,
+      sort,
     };
 
     if (username) query.username = new RegExp(`${username}`, 'gi');
@@ -60,7 +64,7 @@ export class UsersService {
 
     const total = await this.userModel.countDocuments(query);
 
-    const data = await this.userModel.find(query, {}, options);
+    const data = await this.userModel.find(query, { password: 0 }, options);
     const meta = new PaginationMetaDTO({ page, size, total });
 
     const pagination = new PaginationDTO(data, meta);

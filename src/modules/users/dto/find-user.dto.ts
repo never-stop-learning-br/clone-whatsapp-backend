@@ -17,7 +17,7 @@ export class FindUserDTO {
   @IsAlphanumeric()
   @IsString()
   @IsOptional()
-  public username?: string;
+  public readonly username?: string;
 
   @ApiPropertyOptional({
     type: String,
@@ -27,5 +27,5 @@ export class FindUserDTO {
   @MaxLength(256)
   @IsString()
   @IsOptional()
-  public email?: string;
+  public readonly email?: string;
 }

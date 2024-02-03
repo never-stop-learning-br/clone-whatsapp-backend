@@ -15,12 +15,14 @@ import { RemoveFieldsInterceptor } from '@/interceptors';
 import { PaginationOptionsDTO } from '@/shared/dtos';
 
 import { CreateUserDTO, FindUserDTO, UpdateUserDTO } from './dto';
+import { SortUserDTO } from './dto/sort-user.dto';
 import { User } from './entities';
+import { UsersSortValidationPipe } from './users-sort-validation';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  public constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @UseInterceptors(new RemoveFieldsInterceptor<User>(['password']))
@@ -32,8 +34,9 @@ export class UsersController {
   public findAll(
     @Query() pagination: PaginationOptionsDTO,
     @Query() filter: FindUserDTO,
+    @Query('sort', new UsersSortValidationPipe()) sort: SortUserDTO,
   ) {
-    return this.usersService.findAll({ filter, pagination });
+    return this.usersService.findAll({ filter, pagination, sort });
   }
 
   @Get(':id')
