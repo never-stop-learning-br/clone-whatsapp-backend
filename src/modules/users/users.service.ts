@@ -65,9 +65,11 @@ export class UsersService {
     const total = await this.userModel.countDocuments(query);
 
     const data = await this.userModel.find(query, { password: 0 }, options);
+
     const meta = new PaginationMetaDTO({ page, size, total });
 
     const pagination = new PaginationDTO(data, meta);
+
     return pagination;
   }
 

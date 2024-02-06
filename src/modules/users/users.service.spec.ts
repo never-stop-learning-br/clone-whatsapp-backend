@@ -4,11 +4,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
+import { FilterQuery, QueryOptions } from 'mongoose';
 
 import { CONNECTION_NAME_MAIN } from '@/shared/constants/database';
+import {
+  PaginationDTO,
+  PaginationMetaDTO,
+  PaginationOptionsDTO,
+} from '@/shared/dtos';
 import { createToday } from '@/shared/tests/utils';
 
-import { CreateUserDTO } from './dto';
+import { CreateUserDTO, FindUserDTO, SortUserDTO } from './dto';
 import { User } from './entities';
 import { UsersService } from './users.service';
 
@@ -19,6 +25,8 @@ describe(UsersService.name, () => {
     create: jest.fn(),
     findByIdAndUpdate: jest.fn(),
     findById: jest.fn(),
+    countDocuments: jest.fn(),
+    find: jest.fn(),
   };
 
   const mockedProviders: Provider[] = [
@@ -242,6 +250,177 @@ describe(UsersService.name, () => {
 
     afterEach(() => {
       jest.useRealTimers();
+    });
+  });
+
+  describe('findAll', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
+    });
+
+    it('should get all users with pagination', async () => {
+      // ? ARRANGE
+      const user: User = {
+        username: faker.person.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+      };
+      const size = faker.number.int({ min: 5 });
+      const page = faker.number.int({ min: 1 });
+      const sort: SortUserDTO = {};
+      const filter: FindUserDTO = {};
+      const pagination: PaginationOptionsDTO = {
+        page,
+        size,
+      };
+
+      const query: FilterQuery<User> = {};
+      const options: QueryOptions<User> = {
+        limit: size,
+        skip: (page - 1) * size,
+        sort,
+      };
+
+      const total = faker.number.int({ min: 0 });
+      const data = [user, user, user];
+
+      const meta = new PaginationMetaDTO({ page, size, total });
+      const expectedValue = new PaginationDTO(data, meta);
+
+      userModelMock.countDocuments.mockReturnValueOnce(total);
+
+      userModelMock.find.mockReturnValueOnce(data);
+
+      // ? ACT
+      const result = await service.findAll({ filter, pagination, sort });
+
+      // ? ASSERT
+      expect(userModelMock.countDocuments).toHaveBeenCalledTimes(1);
+      expect(userModelMock.countDocuments).toHaveBeenCalledWith(query);
+
+      expect(userModelMock.find).toHaveBeenCalledTimes(1);
+      expect(userModelMock.find).toHaveBeenCalledWith(
+        query,
+        { password: 0 },
+        options,
+      );
+
+      expect(result).toEqual(expectedValue);
+    });
+
+    it('should get all users with filter', async () => {
+      // ? ARRANGE
+      const user: User = {
+        email: faker.internet.email(),
+        username: faker.person.firstName(),
+        password: faker.internet.password(),
+      };
+
+      const size = faker.number.int({ min: 5 });
+      const page = faker.number.int({ min: 1 });
+
+      const sort: SortUserDTO = {};
+      const filter: FindUserDTO = {
+        username: user.username,
+        email: user.username,
+      };
+      const pagination: PaginationOptionsDTO = {
+        page,
+        size,
+      };
+
+      const query: FilterQuery<User> = {};
+      query.username = new RegExp(`${filter.username}`, 'gi');
+      query.email = new RegExp(`${filter.email}`, 'gi');
+
+      const options: QueryOptions<User> = {
+        limit: size,
+        skip: (page - 1) * size,
+        sort,
+      };
+
+      const total = faker.number.int({ min: 0 });
+      const data = [user, user, user];
+
+      const meta = new PaginationMetaDTO({ page, size, total });
+      const expectedValue = new PaginationDTO(data, meta);
+
+      userModelMock.countDocuments.mockReturnValueOnce(total);
+
+      userModelMock.find.mockReturnValueOnce(data);
+
+      // ? ACT
+      const result = await service.findAll({ filter, pagination, sort });
+
+      // ? ASSERT
+      expect(userModelMock.countDocuments).toHaveBeenCalledTimes(1);
+      expect(userModelMock.countDocuments).toHaveBeenCalledWith(query);
+
+      expect(userModelMock.find).toHaveBeenCalledTimes(1);
+      expect(userModelMock.find).toHaveBeenCalledWith(
+        query,
+        { password: 0 },
+        options,
+      );
+
+      expect(result).toEqual(expectedValue);
+    });
+
+    it('should get all users with sorting', async () => {
+      // ? ARRANGE
+      const user: User = {
+        username: faker.person.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+      };
+
+      const filter: FindUserDTO = {};
+
+      const page = faker.number.int({ min: 0 });
+      const size = faker.number.int({ min: 5 });
+      const sort: SortUserDTO = {
+        username: faker.number.int({ min: -1, max: 1 }),
+        createdAt: faker.number.int({ min: -1, max: 1 }),
+      };
+
+      const pagination: PaginationOptionsDTO = {
+        page,
+        size,
+      };
+
+      const query: FilterQuery<User> = {};
+      const options: QueryOptions<User> = {
+        limit: size,
+        skip: (page - 1) * size,
+        sort,
+      };
+
+      const data = [user, user, user];
+      const total = faker.number.int({ min: 0, max: 50 });
+
+      const meta = new PaginationMetaDTO({ page, size, total });
+      const expectedValue = new PaginationDTO(data, meta);
+
+      userModelMock.countDocuments.mockReturnValueOnce(total);
+
+      userModelMock.find.mockReturnValueOnce(data);
+
+      // ? ACT
+      const result = await service.findAll({ filter, pagination, sort });
+
+      // ? ASSERT
+      expect(userModelMock.countDocuments).toHaveBeenCalledTimes(1);
+      expect(userModelMock.countDocuments).toHaveBeenCalledWith(query);
+
+      expect(userModelMock.find).toHaveBeenCalledTimes(1);
+      expect(userModelMock.find).toHaveBeenCalledWith(
+        query,
+        { password: 0 },
+        options,
+      );
+
+      expect(result).toEqual(expectedValue);
     });
   });
 });

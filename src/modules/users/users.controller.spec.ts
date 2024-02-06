@@ -3,7 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { faker } from '@faker-js/faker';
 
-import { CreateUserDTO } from './dto';
+import { PaginationOptionsDTO } from '@/shared/dtos';
+
+import { CreateUserDTO, FindUserDTO, SortUserDTO } from './dto';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -13,6 +15,7 @@ describe(UsersController.name, () => {
     updateOneById: jest.fn(),
     createOne: jest.fn(),
     softDeleteById: jest.fn(),
+    findAll: jest.fn(),
   };
 
   const mockedProviders: Provider[] = [
@@ -79,6 +82,82 @@ describe(UsersController.name, () => {
       // ? ASSERT
       expect(usersServiceMock.softDeleteById).toHaveBeenCalledTimes(1);
       expect(usersServiceMock.softDeleteById).toHaveBeenCalledWith(id);
+    });
+  });
+
+  describe('findAll', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
+    });
+
+    it('should get all users', async () => {
+      // ? ARRANGE
+      const pagination: PaginationOptionsDTO = {
+        page: 1,
+        size: 10,
+      };
+      const filter: FindUserDTO = {};
+      const sort: SortUserDTO = {};
+
+      // ? ACT
+      await controller.findAll(pagination, filter, sort);
+
+      // ? ASSERT
+      expect(usersServiceMock.findAll).toHaveBeenCalledTimes(1);
+      expect(usersServiceMock.findAll).toHaveBeenCalledWith({
+        pagination,
+        filter,
+        sort,
+      });
+    });
+
+    it('should get all users with filter', async () => {
+      // ? ARRANGE
+      const pagination: PaginationOptionsDTO = {
+        page: 1,
+        size: 10,
+      };
+      const filter: FindUserDTO = {
+        username: faker.person.firstName(),
+        email: faker.internet.email(),
+      };
+      const sort: SortUserDTO = {};
+
+      // ? ACT
+      await controller.findAll(pagination, filter, sort);
+
+      // ? ASSERT
+      expect(usersServiceMock.findAll).toHaveBeenCalledTimes(1);
+      expect(usersServiceMock.findAll).toHaveBeenCalledWith({
+        pagination,
+        filter,
+        sort,
+      });
+    });
+
+    it('should get all users with sorting', async () => {
+      // ? ARRANGE
+      const pagination: PaginationOptionsDTO = {
+        page: 1,
+        size: 10,
+      };
+      const filter: FindUserDTO = {};
+      const sort: SortUserDTO = {
+        username: faker.number.int({ min: -1, max: 1 }),
+        createdAt: faker.number.int({ min: -1, max: 1 }),
+      };
+
+      // ? ACT
+      await controller.findAll(pagination, filter, sort);
+
+      // ? ASSERT
+      expect(usersServiceMock.findAll).toHaveBeenCalledTimes(1);
+      expect(usersServiceMock.findAll).toHaveBeenCalledWith({
+        pagination,
+        filter,
+        sort,
+      });
     });
   });
 });
