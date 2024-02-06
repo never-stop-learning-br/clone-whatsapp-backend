@@ -323,7 +323,7 @@ describe(UsersService.name, () => {
       const sort: SortUserDTO = {};
       const filter: FindUserDTO = {
         username: user.username,
-        email: user.username,
+        email: user.email,
       };
       const pagination: PaginationOptionsDTO = {
         page,
@@ -397,7 +397,7 @@ describe(UsersService.name, () => {
       };
 
       const data = [user, user, user];
-      const total = faker.number.int({ min: 0, max: 50 });
+      const total = faker.number.int({ min: 0 });
 
       const meta = new PaginationMetaDTO({ page, size, total });
       const expectedValue = new PaginationDTO(data, meta);
