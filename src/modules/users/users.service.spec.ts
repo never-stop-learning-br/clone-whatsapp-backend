@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { NotFoundException, Provider } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -124,7 +124,21 @@ describe(UsersService.name, () => {
       expect(returnedValue).toEqual(expectedValue);
     });
 
-    it.todo('should throw an error if not find one user with given id');
+    it('should throw an error if not find one user with given id', async () => {
+      // ? ARRANGE
+      const id = faker.database.mongodbObjectId();
+
+      userModelMock.findById.mockImplementationOnce(() => undefined);
+
+      // ? ACT
+      // ? ASSERT
+      await expect(() => service.findOneById(id)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      expect(userModelMock.findById).toHaveBeenCalledTimes(1);
+      expect(userModelMock.findById).toHaveBeenCalledWith(id);
+    });
   });
 
   describe('updateOneById', () => {

@@ -13,6 +13,7 @@ describe(UsersController.name, () => {
   let controller: UsersController;
   const usersServiceMock = {
     updateOneById: jest.fn(),
+    findOneById: jest.fn(),
     createOne: jest.fn(),
     softDeleteById: jest.fn(),
     findAll: jest.fn(),
@@ -49,6 +50,29 @@ describe(UsersController.name, () => {
       // ? ASSERT
       expect(usersServiceMock.createOne).toHaveBeenCalledTimes(1);
       expect(usersServiceMock.createOne).toHaveBeenCalledWith(dto);
+    });
+  });
+
+  describe('updateOneById', () => {
+    it('should update one user by id', async () => {
+      // ? ARRANGE
+      const id = faker.database.mongodbObjectId();
+      const dto = {
+        username: faker.person.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+      };
+
+      usersServiceMock.findOneById.mockReturnValue(dto);
+
+      // ? ACT
+      const result = await controller.findOneById(id);
+
+      // ? ASSERT
+      expect(usersServiceMock.findOneById).toHaveBeenCalledTimes(1);
+      expect(usersServiceMock.findOneById).toHaveBeenCalledWith(id);
+
+      expect(result).toEqual(dto);
     });
   });
 
