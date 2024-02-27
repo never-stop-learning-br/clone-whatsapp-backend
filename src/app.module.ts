@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { GatewayModule } from '@/gateway';
 import { ModulesModule } from '@/modules';
+import { CONNECTION_NAME_MAIN } from '@/shared/constants/database';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { ModulesModule } from '@/modules';
       envFilePath: '.env',
     }),
     MongooseModule.forRootAsync({
-      connectionName: 'main',
+      connectionName: CONNECTION_NAME_MAIN,
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const uri = configService.getOrThrow('DB_URI');
