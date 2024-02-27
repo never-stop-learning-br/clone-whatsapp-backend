@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TimesTampedDto {
+export class TimestampDTO {
   @ApiProperty({
     type: String,
     description: 'User creation date',

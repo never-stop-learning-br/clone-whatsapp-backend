@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { TimesTampedDto } from '@/shared/dtos/responses/timestamped.dto';
+import { TimestampDTO } from '@/shared/dtos/responses/timestamped.dto';
 
-export class DataOkResponse extends TimesTampedDto {
+export class DataOkResponse extends TimestampDTO {
   @ApiProperty({
     type: String,
     description: 'Unique "username" in the application',

@@ -6,12 +6,12 @@ import { DataOkResponse } from './data-ok-response.dto';
 
 export class FindAllUserOkResponseDto {
   @ApiProperty({ type: [DataOkResponse] })
-  readonly data: DataOkResponse[];
+  public readonly data: DataOkResponse[];
 
   @ApiProperty()
-  readonly meta: PaginationMetaDTO;
+  public readonly meta: PaginationMetaDTO;
 
-  constructor(data: Partial<FindAllUserOkResponseDto>) {
+  public constructor(data: Partial<FindAllUserOkResponseDto>) {
     Object.assign(this, data);
   }
 }

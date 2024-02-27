@@ -37,7 +37,7 @@ export class UsersController {
       'This request creates a user given email, password and username',
   })
   @ApiResponse({
-    description: 'Create use response',
+    description: 'Create user response',
     type: CreateUserOkResponseDto,
     status: 201,
   })
@@ -48,12 +48,12 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Find All users without or by filter',
+    summary: 'Find all users',
     description:
       'This request finds all users if no filter is passed, or finds a specific user by passing email or username using sorting by username or createdAT',
   })
   @ApiResponse({
-    description: 'find all user response',
+    description: 'Find all user response',
     type: FindAllUserOkResponseDto,
     status: 200,
   })
@@ -61,7 +61,7 @@ export class UsersController {
   @ApiQuery({
     name: 'sort',
     type: String,
-    description: 'Parametro para fazer sorting',
+    description: 'Sorting parameter',
     example: '{"createdAt":-1,"username":-1}',
     required: false,
   })
@@ -78,12 +78,12 @@ export class UsersController {
     description: 'This request find user passing id',
   })
   @ApiResponse({
-    description: 'find user by id ok response',
+    description: 'Find user by id ok response',
     type: FindByIdUserOkResponseDto,
     status: 200,
   })
   @ApiResponse({
-    description: 'find user by id error response',
+    description: 'Find user by id error response',
     type: FindByIdErrorResponseDto,
     status: 404,
   })
