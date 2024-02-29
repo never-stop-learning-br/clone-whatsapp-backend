@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -23,7 +24,7 @@ import { SoftDeleteUserOkResponseDto } from './dto/responses/soft-delete-ok-resp
 import { UpdateUserOkResponseDto } from './dto/responses/update-user-ok-response.dto';
 import { SortUserDTO } from './dto/sort-user.dto';
 import { User } from './entities';
-import { UsersSortValidationPipe } from './users-sort-validation';
+import { UsersSortValidationPipe } from './pipes';
 import { UsersService } from './users.service';
 
 @ApiTags('Users')
@@ -39,7 +40,7 @@ export class UsersController {
   @ApiResponse({
     description: 'Create user response',
     type: CreateUserOkResponseDto,
-    status: 201,
+    status: HttpStatus.CREATED,
   })
   @Post()
   @UseInterceptors(new RemoveFieldsInterceptor<User>(['password']))
@@ -55,9 +56,8 @@ export class UsersController {
   @ApiResponse({
     description: 'Find all user response',
     type: FindAllUserOkResponseDto,
-    status: 200,
+    status: HttpStatus.OK,
   })
-  @Get()
   @ApiQuery({
     name: 'sort',
     type: String,
@@ -65,6 +65,7 @@ export class UsersController {
     example: '{"createdAt":-1,"username":-1}',
     required: false,
   })
+  @Get()
   public findAll(
     @Query() pagination: PaginationOptionsDTO,
     @Query() filter: FindUserDTO,
@@ -80,12 +81,12 @@ export class UsersController {
   @ApiResponse({
     description: 'Find user by id ok response',
     type: FindByIdUserOkResponseDto,
-    status: 200,
+    status: HttpStatus.OK,
   })
   @ApiResponse({
     description: 'Find user by id error response',
     type: FindByIdErrorResponseDto,
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
   })
   @Get(':id')
   public findOneById(@Param('id') id: string) {
@@ -100,7 +101,7 @@ export class UsersController {
   @ApiResponse({
     description: 'update user by id response',
     type: UpdateUserOkResponseDto,
-    status: 200,
+    status: HttpStatus.OK,
   })
   @Patch(':id')
   @UseInterceptors(new RemoveFieldsInterceptor<User>(['password']))
@@ -119,7 +120,7 @@ export class UsersController {
   @ApiResponse({
     description: 'Delete user by id response',
     type: SoftDeleteUserOkResponseDto,
-    status: 200,
+    status: HttpStatus.OK,
   })
   @Delete(':id')
   @UseInterceptors(new RemoveFieldsInterceptor<User>(['password']))
