@@ -73,6 +73,14 @@ export class UsersService {
     return pagination;
   }
 
+  public async findOneByEmail(email: string) {
+    const user = await this.userModel.findOne({ email });
+
+    if (!user) throw new NotFoundException();
+
+    return user;
+  }
+
   public async findOneById(id: string) {
     const user = await this.userModel.findById(id);
 
